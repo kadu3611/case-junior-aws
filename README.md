@@ -155,3 +155,79 @@ create_terraform/
 ├── terraform.tfstate.backup
 └── .terraform/ # Plugins e providers do Terraform
 
+
+## 🚀 Deploy e Execução Local
+
+Esta seção explica como **deployar a infraestrutura AWS** usando Terraform e como **testar a Lambda localmente** antes de subir para a nuvem.
+
+---
+
+### 1️⃣ Pré-requisitos
+
+- Python 3.10+
+- pip / virtualenv
+- AWS CLI configurado (credenciais e região `sa-east-1`)
+- Terraform 1.5+ instalado
+- Node.js (opcional se usar SAM ou Serverless no futuro)
+
+---
+
+### 2️⃣ Deploy na AWS com Terraform
+
+1. Navegue para a pasta do Terraform:
+
+``bash
+cd create_terraform
+
+2. Inicialize o Terraform (baixar providers):
+terraform init
+
+3. Validar os arquivos de configuração:
+terraform validate
+
+4. Planejar a criação da infraestrutura:
+terraform plan
+
+5.Aplicar a infraestrutura:
+terraform apply
+
+Confirme digitando 'yes' quando solicitado.
+
+Isso vai criar:
+DynamoDB (Tasks)
+Lambda (tarefa_lambda)
+API Gateway com todos os endpoints
+IAM Roles e Policies
+
+6.Após o deploy, você receberá a URL base da API. Exemplo:
+https://0n8tr5v6p9.execute-api.sa-east-1.amazonaws.com
+
+##Testes localmente:
+1. Crie um ambiente virtual:
+cd lambda/tarefa_lambda
+python -m venv venv
+source venv/bin/activate   # Linux / Mac
+venv\Scripts\activate      # Windows
+
+2. Simule uma execução local usando um evento de teste:
+import json
+from main import lambda_handler
+
+# Exemplo de evento para criar tarefa
+event = {
+    "requestContext": {
+        "http": {"method": "POST"}
+    },
+    "headers": {
+        "criado_por": "usuario_teste"
+    },
+    "body": json.dumps({
+        "title": "Test Task",
+        "description": "Executando Lambda localmente"
+    })
+}
+
+response = lambda_handler(event, None, criado_por="usuario_teste")
+print(response)
+
+
