@@ -1,15 +1,9 @@
 import json
 
-def handle_delete(event, table, user_id):
-
+def handle_delete(event, usecase, criado_por):
     task_id = event["pathParameters"]["id"]
 
-    table.delete_item(
-        Key={
-            "pk": f"USER#{user_id}",
-            "sk": f"TASK#{task_id}"
-        }
-    )
+    usecase.delete_task(task_id, criado_por)
 
     return {
         "statusCode": 200,

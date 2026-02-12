@@ -1,22 +1,10 @@
 import json
-import uuid
 
-def handle_create(event, table, criado_por):
+def handle_create(event, usecase, criado_por):
     body = json.loads(event["body"])
-
-    task_id = str(uuid.uuid4())
-
-    item = {
-        "pk": f"USER#{criado_por}",
-        "sk": f"TASK#{task_id}",
-        "titulo": body["titulo"],
-        "descricao": body.get("descricao", ""),
-        "criado_por": criado_por
-    }
-
-    table.put_item(Item=item)
-
+    result = usecase.create_task(body, criado_por)
+    print("BODY:", event["body"])
     return {
-        "statusCode": 200,
-        "body": json.dumps(item)
+        "statusCode": 201,
+        "body": json.dumps(result)
     }

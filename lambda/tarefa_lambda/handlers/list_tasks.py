@@ -1,16 +1,9 @@
 import json
-from boto3.dynamodb.conditions import Key
 
-def handle_list(event, table, criado_por):
-
-    response = table.query(
-        KeyConditionExpression=Key("pk").eq(f"USER#{criado_por}")
-    )
-
-    items = response.get("Items", [])
+def handle_list(usecase, criado_por):
+    tasks = usecase.list_tasks(criado_por)
 
     return {
         "statusCode": 200,
-        "body": json.dumps(items)
+        "body": json.dumps(tasks)
     }
-
