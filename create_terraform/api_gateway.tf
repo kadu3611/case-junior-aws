@@ -37,6 +37,12 @@ resource "aws_apigatewayv2_route" "list_tasks" {
   target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
 }
 
+resource "aws_apigatewayv2_route" "list_all_tasks" {
+  api_id    = aws_apigatewayv2_api.tarefa_api.id
+  route_key = "GET /tasks/all"
+  target    = "integrations/${aws_apigatewayv2_integration.lambda_integration.id}"
+}
+
 resource "aws_apigatewayv2_route" "get_task" {
   api_id    = aws_apigatewayv2_api.tarefa_api.id
   route_key = "GET /tasks/{id}"

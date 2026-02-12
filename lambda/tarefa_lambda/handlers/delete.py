@@ -2,7 +2,7 @@ import json
 
 def handle_delete(event, table, user_id):
 
-    task_id = event["queryStringParameters"]["task_id"]
+    task_id = event["pathParameters"]["id"]
 
     table.delete_item(
         Key={
@@ -13,5 +13,5 @@ def handle_delete(event, table, user_id):
 
     return {
         "statusCode": 200,
-        "body": json.dumps({"message": "Task deleted"})
+        "body": json.dumps({"message": "Tarefa deletada"})
     }

@@ -2,7 +2,7 @@ import json
 
 def handle_update(event, table, criado_por):
 
-    task_id = event["queryStringParameters"]["task_id"]
+    task_id = event["pathParameters"]["id"]
     body = json.loads(event["body"])
 
     table.update_item(
@@ -19,6 +19,6 @@ def handle_update(event, table, criado_por):
 
     return {
         "statusCode": 200,
-        "body": json.dumps({"message": "Task updated"})
+        "body": json.dumps({"message": "Tarefa Atualizada"})
     }
 
