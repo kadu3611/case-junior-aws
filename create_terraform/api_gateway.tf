@@ -38,3 +38,8 @@ resource "aws_lambda_permission" "allow_apigateway" {
 
   source_arn = "${aws_apigatewayv2_api.tarefa_api.execution_arn}/*/*"
 }
+
+#Para mostrar o endpoint
+output "api_url" {
+  value = aws_apigatewayv2_api.tarefa_api.api_endpoint
+}
