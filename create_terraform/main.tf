@@ -1,8 +1,9 @@
 data "archive_file" "lambda_zip" {
   type        = "zip"
-  source_file = "${path.module}/../lambda/tarefa_lambda/main.py"
-  output_path = "${path.module}/tarefa_lambda.zip"
+  source_dir  = "${path.module}/../lambda/tarefa_lambda"
+  output_path = "${path.module}/.terraform/tarefa_lambda.zip"
 }
+
 
 resource "aws_lambda_function" "tarefa" {
   function_name = "tarefa-crud"

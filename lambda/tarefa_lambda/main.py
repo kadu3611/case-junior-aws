@@ -1,50 +1,31 @@
-import json
-import uuid
+import os
 import boto3
-from datetime import datetime
+from handlers.create import handle_create
+from handlers.list_tasks import handle_list
+from handlers.update import handle_update
+from handlers.delete import handle_delete
 
 dynamodb = boto3.resource("dynamodb")
-table = dynamodb.Table("Tarefa")
-
-
-def response(status, body):
-    return {
-        "statusCode": status,
-        "headers": {"Content-Type": "application/json"},
-        "body": json.dumps(body)
-    }
+table = dynamodb.Table(os.environ["TABLE_NAME"])
 
 
 def lambda_handler(event, context):
-
     method = event["requestContext"]["http"]["method"]
-    path = event["rawPath"]
+    criado_por = event["headers"].get("criado_por")
 
-    user_id = event["headers"].get("criado_por")
+    if not criado_por:
+        return {"statusCode": 400, "body": "necessário 'criado_por' no header"}
 
-    if not user_id:
-        return response(400, {"message": "Necessário o parametro 'criado_por' no Header"})
+    if method == "POST":
+        return handle_create(event, table, criado_por)
 
-    # CREATE
-    if method == "POST" and path == "/tasks":
-        body = json.loads(event["body"])
+    if method == "GET":
+        return handle_list(event, table, criado_por)
 
-        task_id = str(uuid.uuid4())
+    if method == "PUT":
+        return handle_update(event, table, criado_por)
 
-        item = {
-            "pk": f"USER#{user_id}",
-            "sk": f"TASK#{task_id}",
-            "id": task_id,
-            "titulo": body["titulo"],
-            "descricao": body.get("descricao", ""),
-            "status": "PENDENTE",
-            "criado_por": user_id,
-            "data_criacao": datetime.utcnow().strftime("%Y-%m-%d"),
-            "data_conclusao": None
-        }
+    if method == "DELETE":
+        return handle_delete(event, table, criado_por)
 
-        table.put_item(Item=item)
-
-        return response(201, item)
-
-    return response(404, {"message": "Route not found"})
+    return {"statusCode": 405, "body": "Método não permitido"}
